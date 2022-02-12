@@ -2,8 +2,37 @@
   <v-row class="mx-2 mt-6 d-flex justify-center">
     <v-col md=4 lg=8>
       <h1 class="text-h2 mb-6">List of todos</h1>
+      <v-form>
+        <h2 class="text-h4 mb-5">Create a todo</h2>
+        <v-text-field
+          v-model="title"
+          label="Title"
+          required
+        >
+        </v-text-field>
+        <v-text-field
+          v-model="description"
+          label="Description"
+          required
+        >
+        </v-text-field>
+        <div class="text-center d-flex justify-end">
+          <v-btn
+            elevation="2"
+            rounded
+            dark
+            color="primary"
+            class="mb-4"
+            @click="createTodo"
+          >
+            Add todo
+          </v-btn>
+        </div>
+      </v-form>
+      <v-divider></v-divider>
       <v-list
         two-line
+        v-if="todos.length"
       >
         <v-list-item
           v-for="todo in todos"
@@ -13,8 +42,18 @@
             <v-list-item-title>{{ todo.title }}</v-list-item-title>
             <v-list-item-subtitle>{{ todo.description }}</v-list-item-subtitle>
           </v-list-item-content>
+          <v-btn
+            elevation="1"
+            outlined
+            depressed
+            color="error"
+            @click="removeTodo(todo)"
+          >
+            Remove
+          </v-btn>
         </v-list-item>
       </v-list>
+      <h3 v-else class="mt-4">No todos left</h3>
     </v-col>
   </v-row>
 </template>
@@ -22,6 +61,8 @@
 export default {
   data() {
     return {
+      title: "",
+      description: "",
       todos: [
         {
           id: 0,
@@ -49,6 +90,23 @@ export default {
           description: "Description for the element with number 5"
         }
       ]
+    }
+  },
+  methods: {
+    createTodo() {
+      if (this.title && this.description) {
+        const newTodo = {
+          id: Date.now(),
+          title: this.title,
+          description: this.description
+        };
+        this.todos.push(newTodo);
+        this.title = "";
+        this.description = "";
+      }
+    },
+    removeTodo(todo) {
+      this.todos = this.todos.filter(t => t.id !== todo.id)
     }
   }
 }
