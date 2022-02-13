@@ -39,10 +39,10 @@
           :key="todo.id"
         >
           <v-list-item-content>
-            <v-list-item-title>{{ todo.title }}</v-list-item-title>
+            <v-list-item-title @click="editTodo(todo, 1)" :id="todo.id+`_`+todo.title">{{ todo.title }}</v-list-item-title>
             <v-list-item-subtitle 
-              @click="editTodo(todo)" 
-              :id="todo.id"
+              @click="editTodo(todo, 2)" 
+              :id="todo.id+`_`+todo.description"
             >
               {{ todo.description }}
             </v-list-item-subtitle>
@@ -113,8 +113,22 @@ export default {
     removeTodo(todo) {
       this.todos = this.todos.filter(t => t.id !== todo.id)
     },
-    editTodo(todo) {
-      const view = document.getElementById(`${todo.id}`);
+    editTodo(todo, n) {
+      /*if (n == 1) {
+        const view = document.getElementById(`${todo.id}-title`);
+      } else {
+        const view = document.getElementById(`${todo.id-description}`);
+      }*/
+      let view = null;
+      if (n === 1) {
+        console.log("Title");
+        view = document.getElementById(`${todo.id}_${todo.title}`);
+      } else {
+        console.log("Description");
+        view = document.getElementById(`${todo.id}_${todo.description}`);
+      }
+      /*const viewTitle = document.getElementById(`${todo.id}${todo.title}`)
+      const viewDescription = document.getElementById(`${todo.id}${todo.description}`);*/
       const area = document.createElement("textarea");
       area.className = "edit";
       area.value = view.innerText;
