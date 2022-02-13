@@ -1,5 +1,5 @@
 <template>
-  <v-row class="mx-2 mt-6 d-flex justify-center">
+  <v-row class="mx-2 mt-6 d-flex justify-center" id="todoList">
     <v-col md=4 lg=8>
       <h1 class="text-h2 mb-6">List of todos</h1>
       <v-form>
@@ -40,7 +40,12 @@
         >
           <v-list-item-content>
             <v-list-item-title>{{ todo.title }}</v-list-item-title>
-            <v-list-item-subtitle>{{ todo.description }}</v-list-item-subtitle>
+            <v-list-item-subtitle 
+              @click="editTodo(todo)" 
+              :id="todo.id"
+            >
+              {{ todo.description }}
+            </v-list-item-subtitle>
           </v-list-item-content>
           <v-btn
             elevation="1"
@@ -107,10 +112,29 @@ export default {
     },
     removeTodo(todo) {
       this.todos = this.todos.filter(t => t.id !== todo.id)
+    },
+    editTodo(todo) {
+      const view = document.getElementById(`${todo.id}`);
+      const area = document.createElement("textarea");
+      area.className = "edit";
+      area.value = view.innerText;
+      area.addEventListener("keydown", (event) => {
+        if(event.key == "Enter") {
+          area.blur();
+        }
+      });
+      area.addEventListener("blur", () => {
+        view.innerText = area.value;
+        area.replaceWith(view);
+      });
+      view.replaceWith(area);
+      area.focus();
     }
   }
 }
 </script>
 <style>
-  
+ .edit {
+   border: 4px solid green;
+ }
 </style>
