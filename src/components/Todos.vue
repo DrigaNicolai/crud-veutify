@@ -114,11 +114,6 @@ export default {
       this.todos = this.todos.filter(t => t.id !== todo.id)
     },
     editTodo(todo, n) {
-      /*if (n == 1) {
-        const view = document.getElementById(`${todo.id}-title`);
-      } else {
-        const view = document.getElementById(`${todo.id-description}`);
-      }*/
       let view = null;
       if (n === 1) {
         console.log("Title");
@@ -127,8 +122,6 @@ export default {
         console.log("Description");
         view = document.getElementById(`${todo.id}_${todo.description}`);
       }
-      /*const viewTitle = document.getElementById(`${todo.id}${todo.title}`)
-      const viewDescription = document.getElementById(`${todo.id}${todo.description}`);*/
       const area = document.createElement("textarea");
       area.className = "edit";
       area.value = view.innerText;
