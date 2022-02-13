@@ -39,14 +39,61 @@
           :key="todo.id"
         >
           <v-list-item-content>
-            <v-list-item-title @click="editTodo(todo, 1)" :id="todo.id+`_`+todo.title">{{ todo.title }}</v-list-item-title>
-            <v-list-item-subtitle 
-              @click="editTodo(todo, 2)" 
-              :id="todo.id+`_`+todo.description"
-            >
-              {{ todo.description }}
-            </v-list-item-subtitle>
+            <div v-if="!todo.edit">
+              <v-list-item-title  
+                :id="todo.id+`_`+todo.title" 
+                v-model="todo.title"
+              >
+                {{ todo.title }}
+              </v-list-item-title>
+              <v-list-item-subtitle 
+                :id="todo.id+`_`+todo.description"
+              >
+                {{ todo.description }}
+              </v-list-item-subtitle>
+            </div>
+            <div v-else>
+              <v-text-field 
+                dense 
+                outlined 
+                label="Title" 
+                v-model="todo.title"
+              ></v-text-field>
+              <v-textarea 
+                dense 
+                outlined
+                height="70px"
+                no-resize 
+                label="Description" 
+                v-model="todo.description"
+              ></v-textarea>
+            </div>
           </v-list-item-content>
+          <v-btn
+            elevation="1"
+            outlined
+            depressed
+            color="success"
+            class="mr-1"
+            @click.stop="todo.edit = !todo.edit"
+            v-if="!todo.edit"
+          >
+            <v-icon left>
+              mdi-pencil
+            </v-icon>
+            Edit
+          </v-btn>
+          <v-btn
+            elevation="1"
+            outlined
+            depressed
+            color="success"
+            class="mr-1"
+            @click.stop="todo.edit = !todo.edit"
+            v-else
+          >
+            Save
+          </v-btn>
           <v-btn
             elevation="1"
             outlined
@@ -68,31 +115,37 @@ export default {
     return {
       title: "",
       description: "",
+      edit: false,
       todos: [
         {
           id: 0,
           title: "Title 1",
-          description: "Description for the element with number 1"
+          description: "Description for the element with number 1",
+          edit: false
         },
         {
           id: 1,
           title: "Title 2",
-          description: "Description for the element with number 2"
+          description: "Description for the element with number 2",
+          edit: false
         },
         {
           id: 2,
           title: "Title 3",
-          description: "Description for the element with number 3"
+          description: "Description for the element with number 3",
+          edit: false
         },
         {
           id: 3,
           title: "Title 4",
-          description: "Description for the element with number 4"
+          description: "Description for the element with number 4",
+          edit: false
         },
         {
           id: 4,
           title: "Title 5",
-          description: "Description for the element with number 5"
+          description: "Description for the element with number 5",
+          edit: false
         }
       ]
     }
@@ -100,48 +153,20 @@ export default {
   methods: {
     createTodo() {
       if (this.title && this.description) {
-        const newTodo = {
+        this.todos.push({
           id: Date.now(),
           title: this.title,
           description: this.description
-        };
-        this.todos.push(newTodo);
+        });
         this.title = "";
         this.description = "";
       }
     },
     removeTodo(todo) {
-      this.todos = this.todos.filter(t => t.id !== todo.id)
+      this.todos.splice(this.todos.indexOf(todo), 1);
     },
-    editTodo(todo, n) {
-      let view = null;
-      if (n === 1) {
-        console.log("Title");
-        view = document.getElementById(`${todo.id}_${todo.title}`);
-      } else {
-        console.log("Description");
-        view = document.getElementById(`${todo.id}_${todo.description}`);
-      }
-      const area = document.createElement("textarea");
-      area.className = "edit";
-      area.value = view.innerText;
-      area.addEventListener("keydown", (event) => {
-        if(event.key == "Enter") {
-          area.blur();
-        }
-      });
-      area.addEventListener("blur", () => {
-        view.innerText = area.value;
-        area.replaceWith(view);
-      });
-      view.replaceWith(area);
-      area.focus();
-    }
   }
 }
 </script>
 <style>
- .edit {
-   border: 4px solid green;
- }
 </style>
