@@ -35,7 +35,7 @@
         v-if="todos.length"
       >
         <v-list-item
-          v-for="todo in todos"
+          v-for="(todo, todoIndex) in todos"
           :key="todo.id"
         >
           <v-list-item-content>
@@ -99,7 +99,7 @@
             outlined
             depressed
             color="error"
-            @click="removeTodo(todo)"
+            @click="removeTodo(todoIndex)"
           >
             Remove
           </v-btn>
@@ -162,8 +162,8 @@ export default {
         this.description = "";
       }
     },
-    removeTodo(todo) {
-      this.todos.splice(this.todos.indexOf(todo), 1);
+    removeTodo(index) {
+      this.todos.splice(index, 1);
     },
   }
 }
