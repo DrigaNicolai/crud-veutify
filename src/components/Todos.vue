@@ -2,9 +2,9 @@
 export default {
   data() {
     return {
-      title: "",
-      description: "",
-      edit: false,
+      modelTodo: {edit: false},
+      selectOptions: ["Title", "Description"],
+      selectedSort: "",
       todos: [
         {
           id: 0,
@@ -41,19 +41,55 @@ export default {
   },
   methods: {
     createTodo() {
-      if (this.title && this.description) {
-        this.todos.push({
-          id: Date.now(),
-          title: this.title,
-          description: this.description
-        });
-        this.title = "";
-        this.description = "";
+      const form = this.$refs.form
+      if (form.validate()) {
+        this.modelTodo.id = Date.now();
+        this.todos.push(this.modelTodo);
+        this.clearModel();
       }
     },
     removeTodo(index) {
       this.todos.splice(index, 1);
     },
+    clearModel() {
+      this.modelTodo = {edit: false};
+    },
+  },
+  computed: {
+    computedRules() {
+      return {
+        required: (v) => !!v || 'This is required field',
+        minLength: (length) => {
+          return (v) => (v && (v.length > length) )|| `Min length ${length}`;
+        }
+      }
+    },
+    /*sortedTodos() {
+      if (this.selectedSort === "Title") {
+        return [...this.todos].sort((todo1, todo2) => {
+          return todo1.title?.localeCompare(todo2.title);
+        });
+      } else if (this.selectedSort === "Description") {
+        return [...this.todos].sort((todo1, todo2) => {
+          return todo1.description?.localeCompare(todo2.description);
+        });
+      } else {
+        return [...this.todos];
+      }
+    }*/ // Works bed with delete function
+  },
+  watch: {
+    selectedSort(newValue) {
+      if (newValue === "Title") {
+        this.todos.sort((todo1, todo2) => {
+          return todo1.title?.localeCompare(todo2.title);
+        })
+      } else {
+        this.todos.sort((todo1, todo2) => {
+          return todo1.description?.localeCompare(todo2.description);
+        })
+      }
+    }
   }
 }
 </script>
@@ -61,18 +97,18 @@ export default {
   <v-row class="mx-2 mt-6 d-flex justify-center" id="todoList">
     <v-col md=4 lg=8>
       <h1 class="text-h2 mb-6">List of todos</h1>
-      <v-form>
-        <h2 class="text-h4 mb-5">Create a todo</h2>
+      <h2 class="text-h4 mb-5">Create a todo</h2>
+      <v-form ref="form" lazy-validation>
         <v-text-field
-          v-model="title"
+          v-model="modelTodo.title"
           label="Title"
-          required
+          :rules="[computedRules.required, computedRules.minLength(5)]"
         >
         </v-text-field>
         <v-text-field
-          v-model="description"
+          v-model="modelTodo.description"
           label="Description"
-          required
+          :rules="[computedRules.required, computedRules.minLength(10)]"
         >
         </v-text-field>
         <div class="text-center d-flex justify-end">
@@ -82,13 +118,21 @@ export default {
             dark
             color="primary"
             class="mb-4"
-            @click="createTodo"
+            @click="createTodo()"
           >
             Add todo
           </v-btn>
         </div>
       </v-form>
       <v-divider></v-divider>
+      <v-select
+        :items="selectOptions"
+        label="Select an option for sorting"
+        outlined
+        class="mt-4"
+        v-model="selectedSort"
+      >
+      </v-select>
       <v-list
         two-line
         v-if="todos.length"
